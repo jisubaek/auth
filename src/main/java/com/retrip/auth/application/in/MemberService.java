@@ -28,7 +28,7 @@ public class MemberService implements ManageMemberUseCase {
     @Override
     public MemberCreateResponse createUser(MemberCreateRequest request) {
         String encode = passwordEncoder.encode(request.password());
-        boolean isDuplicate = !memberRepository.findByEmail(new MemberEmail(request.email())).isEmpty();
+        boolean isDuplicate = !memberRepository.findByEmailAndIsDeletedFalse(new MemberEmail(request.email())).isEmpty();
         if (isDuplicate) {
             throw new DuplicateRequestException("Email already exists");
         }
@@ -57,7 +57,7 @@ public class MemberService implements ManageMemberUseCase {
 
 
     private Member findByEmail(String email) {
-        return memberRepository.findByEmail(new MemberEmail(email))
+        return memberRepository.findByEmailAndIsDeletedFalse(new MemberEmail(email))
                 .stream().findAny().orElseThrow(MemberNotFoundException::new);
     }
 
